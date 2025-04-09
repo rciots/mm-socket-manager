@@ -1,0 +1,76 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dc-socket-manager
+  labels:
+    app: dc-socket-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dc-socket-manager
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dc-socket-manager
+    spec:
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+      securityContext: {}
+      containers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: dc-socket-manager
+          env:        
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: dc-socket-manager
+                  key: PORT
+            - name: UI_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: dc-socket-manager
+                  key: UI_PORT
+            - name: KEY_PASSPHRASE
+              valueFrom:
+                secretKeyRef:
+                  name: dc-socket-manager
+                  key: KEY_PASSPHRASE
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8081
+              protocol: TCP
+          volumeMounts:
+            - name: dc-socket-manager
+              mountPath: /app/certs
+          securityContext: {}
+          imagePullPolicy: Always
+          terminationMessagePolicy: File
+          image: >-
+            quay.io/mparrade/claw-dc-socket-manager:latest
+      dnsPolicy: ClusterFirst
+      volumes:
+        - name: dc-socket-manager
+          secret:
+            secretName: dc-socket-manager
+            # items:
+            items:
+              - key: clientCA.crt
+                path: clientCA.crt
+              - key: server.key
+                path: server.key
+              - key: server.crt
+                path: server.crt
+              - key: KEY_PASSPHRASE
+                path: KEY_PASSPHRASE
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
