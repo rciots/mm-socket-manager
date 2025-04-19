@@ -1,19 +1,19 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: dc-socket-manager
+  name: socket-manager
   labels:
-    app: dc-socket-manager
+    app: socket-manager
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dc-socket-manager
+      app: socket-manager
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: dc-socket-manager
+        app: socket-manager
     spec:
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -22,22 +22,22 @@ spec:
       containers:
         - resources: {}
           terminationMessagePath: /dev/termination-log
-          name: dc-socket-manager
+          name: socket-manager
           env:        
             - name: PORT
               valueFrom:
                 configMapKeyRef:
-                  name: dc-socket-manager
+                  name: socket-manager
                   key: PORT
-            - name: UI_PORT
+            - name: INTERNAL_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: dc-socket-manager
-                  key: UI_PORT
+                  name: socket-manager
+                  key: INTERNAL_PORT
             - name: KEY_PASSPHRASE
               valueFrom:
                 secretKeyRef:
-                  name: dc-socket-manager
+                  name: socket-manager
                   key: KEY_PASSPHRASE
           ports:
             - containerPort: 8080
@@ -45,18 +45,18 @@ spec:
             - containerPort: 8081
               protocol: TCP
           volumeMounts:
-            - name: dc-socket-manager
+            - name: socket-manager
               mountPath: /app/certs
           securityContext: {}
           imagePullPolicy: Always
           terminationMessagePolicy: File
           image: >-
-            quay.io/mparrade/claw-dc-socket-manager:latest
+            quay.io/rciots/mm-socket-manager:latest
       dnsPolicy: ClusterFirst
       volumes:
-        - name: dc-socket-manager
+        - name: socket-manager
           secret:
-            secretName: dc-socket-manager
+            secretName: socket-manager
             # items:
             items:
               - key: clientCA.crt
@@ -65,8 +65,6 @@ spec:
                 path: server.key
               - key: server.crt
                 path: server.crt
-              - key: KEY_PASSPHRASE
-                path: KEY_PASSPHRASE
   strategy:
     type: RollingUpdate
     rollingUpdate:

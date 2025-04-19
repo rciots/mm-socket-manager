@@ -46,9 +46,9 @@ edgeio.on('connection', (socket) => {
         intio.emit("video", data);
       }
     });
-    socketDevice.on('color', (data) => {
-      console.log("color: " + data);
-      uiIo.emit("color", data);
+    socketDevice.on('winner', (data) => {
+      console.log("winner: " + data);
+      socketUI.emit("winner", data);
     });
     edgeio.on('disconnect', () => {
       socketDevice = "";
@@ -69,6 +69,10 @@ intio.on('connection', (socket) => {
         }
       }
       );
+      socketUI.on("led", (data) => {
+        console.log("led: " + data);
+        socketDevice.emit("led", data);
+      });
       socketUI.on("panic", () => {
         socketDevice.emit("panic");
       });
