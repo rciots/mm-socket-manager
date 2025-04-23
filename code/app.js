@@ -50,6 +50,10 @@ edgeio.on('connection', (socket) => {
       console.log("winner: " + data);
       socketUI.emit("winner", data);
     });
+    socketDevice.on('selectedColors', (data) => {
+      console.log("selectedColors: " + data);
+      socketUI.emit("selectedColors", data);
+    });
     edgeio.on('disconnect', () => {
       socketDevice = "";
       console.log('device disconnected');
