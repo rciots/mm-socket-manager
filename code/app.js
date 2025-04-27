@@ -88,6 +88,10 @@ intio.on('connection', (socket) => {
         socketUI = "";
         console.log('front disconnected');
       });
+      socketUI.on("endgame", (data) => {
+        console.log("endgame: " + data);
+        socketDevice.emit("endgame", data);
+      });
     } else if (socket.handshake.headers.origin == "middleware") {
       socketMid = socket;
       console.log('middleware connected');
