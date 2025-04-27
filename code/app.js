@@ -92,6 +92,10 @@ intio.on('connection', (socket) => {
         console.log("endgame: " + data);
         socketDevice.emit("endgame", data);
       });
+      socketUI.on("phase", (data) => {
+        console.log("phase: " + data);
+        socketDevice.emit("phase", data);
+      });
     } else if (socket.handshake.headers.origin == "middleware") {
       socketMid = socket;
       console.log('middleware connected');
